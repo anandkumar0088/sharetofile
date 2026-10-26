@@ -1,0 +1,15 @@
+{
+  "name": "openshare",
+  "version": "1.0.0",
+  "description": "Local-first file sharing — like AirDrop, for any device on your LAN",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "ws": "^8.18.0",
+    "multicast-dns": "^7.2.5",
+    "qrcode": "^1.5.4"
+  }
+}

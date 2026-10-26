@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+  <title>OpenShare</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow blobs -->
+  <div class="bg">
+    <div class="glow-blob b1"></div>
+    <div class="glow-blob b2"></div>
+    <div class="glow-blob b3"></div>
+  </div>
+
+  <div class="app-container">
+    <main class="app">
+      <!-- ─── TOP NAVIGATION BAR ─── -->
+      <header class="glass header-bar">
+        <div class="brand">
+          <div class="brand-icon-wrap">
+            <svg class="brand-bolt" viewBox="0 0 24 24" width="22" height="22">
+              <defs>
+                <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8"/>
+                  <stop offset="100%" stop-color="#2563eb"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#boltGrad)" d="M13 2L3 14h8l-2 8 10-12h-8l2-8z"/>
+            </svg>
+          </div>
+          <span class="brand-title">OpenShare</span>
+        </div>
+
+        <button class="user-pill" id="btnUserMenu" title="Click to rename device">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="user-pill-name" id="myName">Connecting…</span>
+          <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div class="header-actions">
+          <button class="icon-circle-btn" id="btnQR" title="Scan to pair device">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="13" height="13" rx="2.5" />
+              <path d="M16 8h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-3" />
+            </svg>
+          </button>
+          <button class="icon-circle-btn" id="btnTheme" title="Toggle theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+          <button class="icon-circle-btn" id="btnBT" title="Nearby discovery / Bluetooth">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="2.2" fill="currentColor"/>
+              <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ─── RADAR & PEERS SECTION ─── -->
+      <section class="radar-section" id="radarWrap">
+        <div class="radar-field" id="radar">
+          <!-- Concentric Orbit Rings -->
+          <div class="radar-ring r-inner"></div>
+          <div class="radar-ring r-mid"></div>
+          <div class="radar-ring r-outer"></div>
+          <div class="radar-ring r-boundary"></div>
+
+          <!-- Radar Sweep Effect -->
+          <div class="radar-sweep"></div>
+
+          <!-- Central "You" Node -->
+          <div class="center-node" id="centerDev">
+            <div class="center-disc">
+              <div class="center-icon-wrap" id="myIcon">
+                <!-- Injected by JS: laptop/phone/tablet icon -->
+              </div>
+              <span class="center-title">You</span>
+              <span class="center-subname" id="mySubName">Zesty Fox</span>
+            </div>
+          </div>
+
+          <!-- Orbiting Peer Nodes injected by JS -->
+          <div id="peerNodes"></div>
+        </div>
+
+        <p class="radar-hint" id="emptyHint">
+          <span class="radar-hint-icon">📡</span>
+          <span>Looking for nearby devices…</span>
+          <small>Open <code id="lanUrlText">…</code> on other devices on this Wi-Fi</small>
+        </p>
+      </section>
+
+      <!-- ─── DROP FILES CARD ─── -->
+      <section class="glass drop-card" id="dropZone">
+        <div class="drop-inner">
+          <div class="cloud-icon-wrap">
+            <svg class="cloud-icon" viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 1 1 15.9 6L16 6a5 5 0 0 1 1 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+          </div>
+          <p class="drop-main-text">
+            Drop files here or <button type="button" class="browse-link" id="btnBrowse">browse</button>
+          </p>
+          <span class="drop-subtext" id="dropHint">Select a device above</span>
+        </div>
+        <input type="file" id="fileInput" multiple hidden>
+      </section>
+
+      <!-- ─── SEND TEXT BUTTON ─── -->
+      <button class="send-text-btn" id="btnSendText" type="button">
+        <svg class="send-plane-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+        <span>Send Text</span>
+      </button>
+
+      <!-- ─── RECENT TRANSFERS SECTION ─── -->
+      <section class="glass transfers-card" id="transfersSection">
+        <div class="transfers-header">
+          <h2 class="transfers-title">Recent Transfers</h2>
+          <div class="transfers-tools">
+            <button class="tool-btn icon-tool-btn" id="btnFilterTransfers" title="Filter transfers">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+              </svg>
+            </button>
+            <button class="tool-btn text-tool-btn" id="btnClearTransfers" type="button">Clear all</button>
+            <button class="tool-btn icon-tool-btn" id="btnTransfersMenu" title="More options">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <circle cx="12" cy="5" r="1.8"/>
+                <circle cx="12" cy="12" r="1.8"/>
+                <circle cx="12" cy="19" r="1.8"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <ul class="transfers-list" id="transferList">
+          <!-- Populated dynamically with rich cards matching the screenshot -->
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <!-- ─── MODALS ─── -->
+
+  <!-- QR Pairing Modal -->
+  <div class="modal-backdrop" id="modalQR">
+    <div class="glass modal-card">
+      <button class="modal-close-btn" data-close="modalQR" aria-label="Close">✕</button>
+      <div class="modal-icon-badge">📱</div>
+      <h3 class="modal-title">Scan to Connect</h3>
+      <p class="modal-desc">Scan with your phone's camera to join instantly</p>
+      <div class="qr-box">
+        <img id="qrImg" width="220" height="220" alt="Pairing QR Code">
+      </div>
+      <div class="qr-url-pill">
+        <span class="qr-url-text" id="qrUrlDisplay">…</span>
+        <button class="copy-url-btn" id="btnCopyUrl" title="Copy URL">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Incoming Transfer Modal -->
+  <div class="modal-backdrop" id="modalOffer">
+    <div class="glass modal-card">
+      <div class="modal-icon-badge offer-badge">📥</div>
+      <h3 class="modal-title">Incoming Transfer</h3>
+      <div class="offer-details" id="offerInfo"></div>
+      <div class="modal-actions-row">
+        <button class="action-btn btn-accept" id="btnAccept">✓ Accept</button>
+        <button class="action-btn btn-decline" id="btnDecline">✕ Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Send Text Modal -->
+  <div class="modal-backdrop" id="modalTextTx">
+    <div class="glass modal-card">
+      <button class="modal-close-btn" data-close="modalTextTx" aria-label="Close">✕</button>
+      <div class="modal-icon-badge text-badge">💬</div>
+      <h3 class="modal-title">Send Text Message</h3>
+      <p class="modal-desc" id="sendTextTargetHint">Send a quick link or note</p>
+      <textarea id="txTextArea" rows="4" placeholder="Type or paste a message, link, code snippet…"></textarea>
+      <div class="modal-actions-row">
+        <button class="action-btn btn-primary" id="btnTxConfirm">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+          <span>Send</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Received Text Modal -->
+  <div class="modal-backdrop" id="modalTextRx">
+    <div class="glass modal-card">
+      <button class="modal-close-btn" data-close="modalTextRx" aria-label="Close">✕</button>
+      <div class="modal-icon-badge text-badge">💬</div>
+      <h3 class="modal-title">Received Text</h3>
+      <p class="modal-desc" id="rxTextSenderHint">Message from nearby device</p>
+      <pre class="received-text-box" id="rxTextContent"></pre>
+      <div class="modal-actions-row">
+        <button class="action-btn btn-primary" id="btnCopyRx">📋 Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Device Modal -->
+  <div class="modal-backdrop" id="modalRename">
+    <div class="glass modal-card">
+      <button class="modal-close-btn" data-close="modalRename" aria-label="Close">✕</button>
+      <div class="modal-icon-badge">✏️</div>
+      <h3 class="modal-title">Device Name</h3>
+      <p class="modal-desc">Customize how other devices see you on the network</p>
+      <input type="text" class="rename-input" id="renameInput" maxlength="32" placeholder="e.g. Quick Tiger, Redmi 12, MacBook…">
+      <div class="modal-actions-row">
+        <button class="action-btn btn-primary" id="btnSaveRename">Save Name</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Transfer Progress Toasts -->
+  <div id="toasts"></div>
+
+  <!-- Full-Window Drag & Drop Overlay -->
+  <div class="drag-overlay" id="dragOverlay">
+    <div class="drag-overlay-box">
+      <svg class="drag-cloud-svg" viewBox="0 0 24 24" width="68" height="68" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 1 1 15.9 6L16 6a5 5 0 0 1 1 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+      </svg>
+      <h3>Drop files to send</h3>
+      <p id="dragTargetHint">Drop anywhere to send to selected device</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
